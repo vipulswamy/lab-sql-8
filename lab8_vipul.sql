@@ -76,6 +76,24 @@ order by f.film_id;
 /*
 8. Get all pairs of customers that have rented the same film more than 3 times.
 */
+SELECT g1.customer_id AS Customer_1,
+       g2.customer_id AS Customer_2,
+       COUNT(*) CommonMovies
+FROM( (SELECT c.customer_id, f.film_id
+        FROM customer AS c
+        JOIN rental AS r ON r.customer_id = c.customer_id
+        JOIN inventory AS i ON i.inventory_id = r.inventory_id
+        JOIN film AS f ON i.film_id = f.film_id
+        ) AS g1
+        JOIN (SELECT c.customer_id, f.film_id
+                FROM customer AS c
+                JOIN rental AS r ON r.customer_id = c.customer_id
+                JOIN inventory AS i ON i.inventory_id = r.inventory_id
+                JOIN film AS f ON i.film_id = f.film_id
+    ) AS g2
+    ON g2.film_id = g1.film_id AND g2.customer_id < g1.customer_id )
+GROUP BY g1.customer_id, g2.customer_id
+ORDER BY COUNT(*) DESC;
 /*
 9. For each film, list actor that has acted in more films.
 */
